@@ -90,7 +90,6 @@ public class Devices implements Runnable {
                 Thread.currentThread().interrupt();
                 report.increaseCanceledSourceRequestCount(request.getSourceNumber());
                 report.increaseTimeRequestInBuffer(request.getSourceNumber(), startBusytime - request.getArrivalTimeInSystem());
-                e.printStackTrace();
                 break;
             }
             try {

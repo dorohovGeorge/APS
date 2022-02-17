@@ -19,6 +19,7 @@ public class Buffer {
         Request request = buffer.get(i);
         buffer.set(i, null);
         counter--;
+        System.out.println("Request " + request.getIdRequest() + " in work");
         return request;
     }
 
@@ -26,19 +27,19 @@ public class Buffer {
         Request oldRequest = buffer.get(i);
 
 
+        buffer.set(i, request);
         if (oldRequest == null) {
-            buffer.set(i, request);
             ++counter;
             synchronized (bufferNotEmptyNotifier) {
                 bufferNotEmptyNotifier.notify();
             }
         } else {
-            Vector<Request> tempVect = new Vector<Request>(Collections.nCopies(buffer.size(), null));
+            /*Vector<Request> tempVect = new Vector<Request>(Collections.nCopies(buffer.size(), null));
             Collections.copy(tempVect, buffer);
             tempVect.sort(Comparator.comparing(Request::getArrivalTimeInSystem).reversed());
             Request lastReceived = tempVect.get(0);
             int indexLastReceived = buffer.indexOf(lastReceived);
-            buffer.set(indexLastReceived, request);
+            buffer.set(indexLastReceived, request);*/
             report.increaseTimeRequestInBuffer(oldRequest.getSourceNumber(), System.currentTimeMillis() - oldRequest.getArrivalTimeInSystem());
             System.out.println("Request " + oldRequest.getIdRequest() + " canceled");
             report.increaseCanceledSourceRequestCount(oldRequest.getSourceNumber());

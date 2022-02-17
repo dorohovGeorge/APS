@@ -110,16 +110,16 @@ public class DeviceManager implements Runnable {
         Request request = null;
         synchronized (buffer) {
             Vector<Request> tempVect = rightSort(buffer.buffer);
-            request = tempVect.get(0);
-            tempVect.forEach(System.out::println);
+            if (!tempVect.isEmpty()) {
+                request = tempVect.get(0);
+            }
         }
 
         if (request == null) {
             System.out.println("--------");
             throw new Exception("Not have request");
         }
-        buffer.buffer.setElementAt(null, buffer.buffer.indexOf(request));
-        return request;
+        return buffer.get(buffer.buffer.indexOf(request));
     }
 
     public String printBuffer() {
@@ -142,7 +142,7 @@ public class DeviceManager implements Runnable {
             if (buffer.isEmpty()) {
                 try {
                     synchronized (bufferNotEmptyNotifier) {
-                        System.out.println("Buffer is empty");
+                        System.out.println("Buffer  empty");
                         bufferNotEmptyNotifier.wait();
                     }
                 } catch (InterruptedException e) {
@@ -171,7 +171,7 @@ public class DeviceManager implements Runnable {
             try {
                 request = selectRequests();
             } catch (Exception e) {
-                e.printStackTrace();
+                System.out.println("Buffer is empty");
                 continue;
             }
             device.startWork(request);
