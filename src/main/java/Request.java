@@ -31,9 +31,9 @@ public class Request {
     @Override
     public String toString() {
         return "Request{" +
-                "idRequest=" + idRequest +
-
-                ", arrivalTimeInSystem='" + arrivalTimeInSystem + '\'' +
-                '}';
+            "idRequest=" + idRequest +
+            ", sourceNumber=" + sourceNumber +
+            ", arrivalTimeInSystem=" + arrivalTimeInSystem +
+            '}';
     }
 }

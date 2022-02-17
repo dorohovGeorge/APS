@@ -61,15 +61,55 @@ public class DeviceManager implements Runnable {
         return deviceStatuses;
     }
 
+    private Vector<Request> rightSort(Vector<Request> buffer) {
+        int sizeWithOutNulls = 0;
+        for (Request request : buffer) {
+            if (request == null) {
+                continue;
+            }
+            sizeWithOutNulls++;
+        }
+        Vector<Request> tempVect = new Vector<Request>(Collections.nCopies(sizeWithOutNulls, null));
+        int counter = 0;
+        for (int i = 0; i < buffer.size(); i++) {
+            if (buffer.get(i) != null) {
+                tempVect.set(counter, buffer.get(i));
+                counter++;
+            }
+        }
+
+        bubbleSortArrivalTime(tempVect);
+        bubbleSortSourceNumber(tempVect);
+        return tempVect;
+    }
+
+    private void bubbleSortArrivalTime(Vector<Request> arr) {
+        int n = arr.size();
+        for (int i = 0; i < n - 1; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (arr.get(j).getArrivalTimeInSystem() < arr.get(j + 1).getArrivalTimeInSystem()) {
+                    Request temp = arr.get(j);
+                    arr.set(j, arr.get(j + 1));
+                    arr.set(j + 1, temp);
+                }
+    }
+
+    private void bubbleSortSourceNumber(Vector<Request> arr) {
+        int n = arr.size();
+        for (int i = 0; i < n - 1; i++)
+            for (int j = 0; j < n - i - 1; j++)
+                if (arr.get(j).getSourceNumber() > arr.get(j + 1).getSourceNumber()) {
+                    Request temp = arr.get(j);
+                    arr.set(j, arr.get(j + 1));
+                    arr.set(j + 1, temp);
+                }
+    }
+
+
     private Request selectRequests() throws Exception {
         Request request = null;
         synchronized (buffer) {
-            Vector<Request> tempVect = new Vector<Request>(Collections.nCopies(buffer.buffer.size(), null));
-            Collections.copy(tempVect, buffer.buffer);
-            tempVect.sort(Comparator.comparing(Request::getArrivalTimeInSystem, Comparator.nullsLast(Comparator.naturalOrder())).reversed());
-            //tempVect.sort(Comparator.nullsLast((o1, o2) -> o1.compareTo(o2)).reversed());
-            tempVect.sort(Comparator.comparing(Request::getSourceNumber, Comparator.nullsLast(Comparator.naturalOrder())));
-
+            Vector<Request> tempVect = rightSort(buffer.buffer);
             request = tempVect.get(0);
             tempVect.forEach(System.out::println);
         }
@@ -131,7 +171,7 @@ public class DeviceManager implements Runnable {
             try {
                 request = selectRequests();
             } catch (Exception e) {
-                System.out.println("Not have request");
+                e.printStackTrace();
                 continue;
             }
             device.startWork(request);
